@@ -152,7 +152,7 @@ class EncryptEngine(object):
 
         for i in range(_height):
             for j in range(_width):
-                    encrypted_array[i, j] = int(image_object[i, j]) ^ int(key[z])
-                    z += 1
+                encrypted_array[i, j] = int(image_object[i, j]) ^ int(key[z])
+                z += 1
 
         return encrypted_array, key
