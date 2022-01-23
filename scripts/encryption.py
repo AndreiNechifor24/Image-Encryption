@@ -77,6 +77,13 @@ class EncryptEngine(object):
 
 
          """
+        if image_object is None:
+            raise encrex.BadArgumentException(method_argument=image_object, reason="Argument does not have a value")
+
+        if len(image_dimensions) < 3:
+            raise encrex.ArgumentOutOfRangeException(method_argument=image_dimensions,
+                                                     reason="Given argument does not have the specific picture number of dimensions")
+
         _height = image_dimensions[0]
         _width = image_dimensions[1]
         _depth = image_dimensions[2]
