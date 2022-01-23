@@ -88,8 +88,6 @@ class EncryptEngine(object):
         encrypted_array = np.zeros(shape=[image_dimensions[0], image_dimensions[1], 3],
                                    dtype=np.uint8)
 
-
-
         for i in range(_height):
             for j in range(_width):
                 for d in range(_depth):
@@ -143,8 +141,8 @@ class EncryptEngine(object):
          """
         _height = image_dimensions[0]
         _width = image_dimensions[1]
-        #_depth = image_dimensions[2]
-        _resolution = _height * _width #* _depth
+        # _depth = image_dimensions[2]
+        _resolution = _height * _width
         z = 0
 
         key = self._generate_key(0.2, 3.49, _resolution)

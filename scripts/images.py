@@ -3,6 +3,7 @@ import matplotlib.image as image
 import numpy as np
 from PIL import Image as pilimg
 
+
 class Images(object):
     """ Offers support for image file reading and writing in specific formats for current framework. """
 
@@ -22,7 +23,6 @@ class Images(object):
         _rootFolder = root_folder
 
         self._read_image()
-
 
     @staticmethod
     def _is_image(file_path):
@@ -59,9 +59,7 @@ class Images(object):
         return self._img.shape
 
     def save_image(self, array, name):
-
         pyplot.imsave(name, array)
-
 
     def convert_to_bmp(self):
         img = pilimg.open(self._filePath)
