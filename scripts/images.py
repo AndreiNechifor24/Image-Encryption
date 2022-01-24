@@ -60,10 +60,3 @@ class Images(object):
 
     def save_image(self, array, name):
         pyplot.imsave(name, array)
-
-    def convert_to_bmp(self):
-        img = pilimg.open(self._filePath)
-        r, g, b = img.split()
-        img = pilimg.merge("RGB", (r, g, b))
-        img.save("file.bmp")
-

@@ -8,11 +8,17 @@ from encryption import EncryptEngine
 class UnitTests(object):
     """ Provides support for different units testing """
 
+    # Root folders paths
     _images_root_folder = r"E:\3. Repositories\ImageEncryption\src\resources\demo_images"
-    _bmp_files_folder = _images_root_folder + r"\bmp_files"
-
     _tests_results = r"E:\3. Repositories\ImageEncryption\src\resources\test_results"
+
+    # .bmp files paths
+    _bmp_files_folder = _images_root_folder + r"\bmp_files"
     _bmp_results_folder = _tests_results + r"\bmp_results"
+
+    # .jpeg files paths
+    _jpeg_files_folder = _images_root_folder + r"\jpeg_files"
+    _jpeg_results_folder = _tests_results + r"\jpeg_results"
 
     encryptEngine = None
     imageHandler = None
@@ -71,7 +77,12 @@ class EncryptionUnitTests(UnitTests):
     def _test_bmp_files_encryption(self):
         """ Test encryption method on bmp files test set. """
 
-        for bmpFile in self._get_folder_content(self._bmp_files_folder):
+        _folder_content = self._get_folder_content(self._bmp_files_folder)
+        print(_folder_content)
+        ran_count = 1
+        test_count = len(_folder_content)
+
+        for bmpFile in _folder_content:
             self.encryptEngine = EncryptEngine()
             img = Images(f"{self._bmp_files_folder}\\{bmpFile}")
 
@@ -79,12 +90,46 @@ class EncryptionUnitTests(UnitTests):
             print("{height} x {width} x {color_depth}")
             print(img.get_image_dimensions())
 
+            #try:
             encrypted = self.encryptEngine.encrypt_image(
                 img.get_image_array(),
                 img.get_image_dimensions())
 
             img.save_image(encrypted, f"{self._bmp_results_folder}\\encrypted\\{bmpFile}")
             img.render_image_from_array(encrypted)
+            print(f"TEST LOG: Test {ran_count}/{test_count} ran successfully.")
+            ran_count += 1
+
+            #except Exception:
+                #print(f"Test number {ran_count} failed on {bmpFile} file.")
+
+    def _test_jpeg_files_encryption(self):
+        """ Test encryption method on jpeg files test set. """
+
+        _folder_content = self._get_folder_content(self._jpeg_files_folder)
+        ran_count = 1
+        test_count = len(_folder_content)
+
+        for jpegFile in _folder_content:
+            self.encryptEngine = EncryptEngine()
+            img = Images(f"{self._jpeg_files_folder}\\{jpegFile}")
+
+            print("Image shape:")
+            print("{height} x {width} x {color_depth}")
+            print(img.get_image_dimensions())
+
+            try:
+                encrypted = self.encryptEngine.encrypt_image(
+                    img.get_image_array(),
+                    img.get_image_dimensions())
+
+                img.save_image(encrypted, f"{self._jpeg_results_folder}\\encrypted\\{jpegFile}")
+                img.render_image_from_array(encrypted)
+                print(f"TEST LOG: Test {ran_count}/{test_count} ran successfully.")
+                ran_count += 1
+
+            except Exception as e:
+                print(f"Test number {ran_count} failed on {jpegFile} file.\nReason{e}")
 
     def run_all_unit_tests(self, test_type="all"):
         """
@@ -100,6 +145,9 @@ class EncryptionUnitTests(UnitTests):
         elif test_type == "bmp":
             self._test_bmp_files_encryption()
 
+        elif test_type == "jpeg":
+            self._test_jpeg_files_encryption()
+
 
 class DecryptionUnitTests(UnitTests):
     """ Contains all decryption test scenarios definitions """
@@ -107,7 +155,12 @@ class DecryptionUnitTests(UnitTests):
     def _test_bmp_files_decryption(self):
         """ Test encryption method on bmp files test set. """
 
-        for bmpFile in self._get_folder_content(f"{self._bmp_results_folder}\\encrypted"):
+        _folder_content = self._get_folder_content(f"{self._bmp_results_folder}\\encrypted")
+        print(_folder_content)
+        ran_count = 1
+        test_count = len(_folder_content)
+
+        for bmpFile in _folder_content:
             self.encryptEngine = EncryptEngine()
             img = Images(f"{self._bmp_results_folder}\\encrypted\\{bmpFile}")
 
@@ -115,12 +168,62 @@ class DecryptionUnitTests(UnitTests):
             print("{height} x {width} x {color_depth}")
             print(img.get_image_dimensions())
 
+            #try:
             encrypted = self.encryptEngine.encrypt_image(
                 img.get_image_array(),
                 img.get_image_dimensions())
 
             img.save_image(encrypted, f"{self._bmp_results_folder}\\decrypted\\{bmpFile}")
             img.render_image_from_array(encrypted)
+            print(f"TEST LOG: Test {ran_count}/{test_count} ran successfully.")
+            ran_count += 1
+
+            #except Exception:
+                #print(f"Test number {ran_count} failed on {bmpFile} file.")
+
+    def _test_jpeg_files_decryption(self):
+        """ Test encryption method on jpeg files test set. """
+
+        _folder_content = self._get_folder_content(f"{self._jpeg_results_folder}\\encrypted")
+        ran_count = 1
+        test_count = len(_folder_content)
+
+        for jpeg_file in _folder_content:
+            self.encryptEngine = EncryptEngine()
+            img = Images(f"{self._jpeg_results_folder}\\encrypted\\{jpeg_file}")
+
+            print("Image shape:")
+            print("{height} x {width} x {color_depth}")
+            print(img.get_image_dimensions())
+
+            try:
+                encrypted = self.encryptEngine.encrypt_image(
+                    img.get_image_array(),
+                    img.get_image_dimensions())
+
+                # this set will produce bad results on saving step
+                # refer to this thread for more details
+                """ https://github.com/matplotlib/matplotlib/issues/10072#:~:text=Definitely%20something%20that,does%20it%27s%20thing). """
+                """
+                    Definitely something that should be fixed (hopefully soon!), 
+                    but as a work around now casting to float will work.
+    
+                    The root of the issues is we removed a couple of cast-to-float calls 
+                    (both to save memory and to avoid down-casting float128 values) 
+                    but apparently now let uint though un cast which means 
+                    in the normalization step they all end up being 0 or 1 
+                    (as it looks like your minimum is 0 and all of the other values 
+                    are strictly less that the maximum value except the maximum so integer 
+                    division does it's thing).
+                """
+
+                img.save_image(encrypted, f"{self._jpeg_results_folder}\\decrypted\\{jpeg_file}")
+                img.render_image_from_array(encrypted)
+                print(f"TEST LOG: Test {ran_count}/{test_count} ran successfully.")
+                ran_count += 1
+
+            except Exception as e:
+                print(f"Test number {ran_count} failed on {jpeg_file} file. \n Reason: {e}")
 
     def run_all_unit_tests(self, test_type="all"):
         """
@@ -135,3 +238,6 @@ class DecryptionUnitTests(UnitTests):
 
         elif test_type == "bmp":
             self._test_bmp_files_decryption()
+
+        elif test_type == "jpeg":
+            self._test_jpeg_files_decryption()

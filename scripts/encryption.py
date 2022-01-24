@@ -80,7 +80,7 @@ class EncryptEngine(object):
         if image_object is None:
             raise encrex.BadArgumentException(method_argument=image_object, reason="Argument does not have a value")
 
-        if len(image_dimensions) < 3:
+        if len(image_dimensions) < 1:
             raise encrex.ArgumentOutOfRangeException(method_argument=image_dimensions,
                                                      reason="Given argument does not have the specific picture number of dimensions")
 
@@ -102,64 +102,3 @@ class EncryptEngine(object):
                     z += 1
 
         return encrypted_array
-
-    def decrypt_image(self, image_object, image_dimensions):
-        """
-            Performs decryption over image using chaos map generated key and pixels substitution and permutation.
-
-            Returns: decryption array
-
-            @params:
-                @image_object -> ndarray of the read image
-                @image_dimensions -> tuple containing read dimensions in ({height}, {width}, {color_depth}) format
-
-
-         """
-        _height = image_dimensions[0]
-        _width = image_dimensions[1]
-        _depth = image_dimensions[2]
-        _resolution = _height * _width
-        z = 0
-
-        key = self._generate_key(0.2, 3.0000001, _height*3*_width)
-
-        decrypted_array = np.zeros(shape=[image_dimensions[0], image_dimensions[1], 4],
-                                   dtype=np.uint8)
-
-        for i in range(_height):
-            for j in range(_width):
-                for d in range(_depth):
-                    decrypted_array[i, j, d] = int(image_object[i, j, d]) ^ int(key[z])
-                    z += 1
-
-        return decrypted_array
-
-    def encrypt_bmp_image(self, image_object, image_dimensions):
-        """
-            Performs encryption over image using chaos map generated key and pixels substitution and permutation.
-
-            Returns: encrypted array
-
-            @params:
-                @image_object -> ndarray of the read image
-                @image_dimensions -> tuple containing read dimensions in ({height}, {width}, {color_depth}) format
-
-
-         """
-        _height = image_dimensions[0]
-        _width = image_dimensions[1]
-        # _depth = image_dimensions[2]
-        _resolution = _height * _width
-        z = 0
-
-        key = self._generate_key(0.2, 3.49, _resolution)
-
-        encrypted_array = np.zeros(shape=[image_dimensions[0], image_dimensions[1], 4],
-                                   dtype=np.uint8)
-
-        for i in range(_height):
-            for j in range(_width):
-                encrypted_array[i, j] = int(image_object[i, j]) ^ int(key[z])
-                z += 1
-
-        return encrypted_array, key
